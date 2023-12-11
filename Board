@@ -20,12 +20,6 @@ public:
 
     virtual bool game_is_over() = 0;
 
-    void modify_board_size(int col, int row) {
-        board.resize(row);
-        for (auto &v: board) {
-            v.resize(col);
-        }
-    }
 };
 
 
