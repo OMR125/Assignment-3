@@ -40,7 +40,7 @@ public:
                     return 1;
                 if (j < 4 && board[i][j] == board[i][j + 1] && board[i][j + 1] == board[i][j + 2] && board[i][j + 2] == board[i][j + 3])
                     return 1;
-                if (i < 3 && j < 4 && board[i][j] == board[i + 1][j + 1] &&board[i + 1][j + 1] == board[i + 2][j + 2] && board[i + 2][j + 2] == board[i + 3][j + 3])
+                if (i >= 3 && j < 4 && board[i][j] == board[i - 1][j + 1] &&board[i - 1][j + 1] == board[i - 2][j + 2] && board[i - 2][j + 2] == board[i - 3][j + 3])
                     return 1;
             }
         }
