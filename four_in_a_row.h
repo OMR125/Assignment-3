@@ -1,21 +1,23 @@
 #ifndef CONNECTFOUR_FOUR_IN_A_ROW_H
 #define CONNECTFOUR_FOUR_IN_A_ROW_H
 
-#include "Board.h"
+#include <string>
+#include "BoardGame_Classes.hpp"
 
 using namespace std;
 
-// i want to create a player class . or might forget about it
-// but just make sure to create the smart computer player
-class four_in_a_row : public Board {
+class ConnectFour_Board : public Board {
 public:
-    four_in_a_row() {
+    ConnectFour_Board() {
         n_cols = 7;
         n_rows = 6;
-        board.resize(n_rows);
-        for (auto &v: board) {
-            v.resize(n_cols, '.');
+        board = new char *[n_rows];
+        for (int i = 0; i < n_rows; i++) {
+            board[i] = new char[n_cols];
+            for (int j = 0; j < n_cols; j++)
+                board[i][j] = '.';
         }
+
     }
 
     bool update_board(int x, int y, char symbol) {
@@ -34,13 +36,17 @@ public:
             for (int j = 0; j < 7; j++) {
                 if (board[i][j] == '.')
                     continue;
-                if (i >= 3 && board[i][j] == board[i - 1][j] && board[i - 1][j] == board[i - 2][j] && board[i - 2][j] == board[i - 3][j])
+                if (i >= 3 && board[i][j] == board[i - 1][j] && board[i - 1][j] == board[i - 2][j] &&
+                    board[i - 2][j] == board[i - 3][j])
                     return 1;
-                if (i >= 3 && j >= 3 && board[i][j] == board[i - 1][j - 1] && board[i - 1][j - 1] == board[i - 2][j - 2] && board[i - 2][j - 2] == board[i - 3][j - 3])
+                if (i >= 3 && j >= 3 && board[i][j] == board[i - 1][j - 1] &&
+                    board[i - 1][j - 1] == board[i - 2][j - 2] && board[i - 2][j - 2] == board[i - 3][j - 3])
                     return 1;
-                if (j < 4 && board[i][j] == board[i][j + 1] && board[i][j + 1] == board[i][j + 2] && board[i][j + 2] == board[i][j + 3])
+                if (j < 4 && board[i][j] == board[i][j + 1] && board[i][j + 1] == board[i][j + 2] &&
+                    board[i][j + 2] == board[i][j + 3])
                     return 1;
-                if (i >= 3 && j < 4 && board[i][j] == board[i - 1][j + 1] &&board[i - 1][j + 1] == board[i - 2][j + 2] && board[i - 2][j + 2] == board[i - 3][j + 3])
+                if (i >= 3 && j < 4 && board[i][j] == board[i - 1][j + 1] &&
+                    board[i - 1][j + 1] == board[i - 2][j + 2] && board[i - 2][j + 2] == board[i - 3][j + 3])
                     return 1;
             }
         }
@@ -52,9 +58,9 @@ public:
     }
 
     void display_board() {
-        for (const auto &row: board) {
-            for (const auto &cell: row) {
-                cout << "| " << cell << " ";
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 7; j++) {
+                cout << "| " << board[i][j] << " ";
             }
             cout << "|\n";
         }
@@ -66,33 +72,72 @@ public:
         return n_moves >= 36;
     }
 
+
+};
+
+class ConnectFour_Player : public Player {
+public:
+    ConnectFour_Player(char symbol1, string name) : Player(symbol1) {
+        this->name = name;
+        this->symbol = symbol;
+    }
+    void get_move(int &x, int &y) override{
+        int z;
+        cout << "Enter Column number " << name << "\n";
+        cin >> z;
+        y = z;
+    }
+};
+class Random_Player:public Player{
+public:
+    Random_Player(char symbol):Player(symbol){
+        name = "Computer";
+        this->symbol = symbol;
+    }
+    void get_move(int &x, int &y) override{
+        y = 5;
+    }
+};
+class ConnectFour_GameManager{
+private:
+    Board* Board_ptr;
+    Player* players[2];
+public:
     void run() {
-        string player1, player2;
-        cout << "Enter Player 1 name: \n";
-        cin >> player1;
+        Board_ptr = new ConnectFour_Board();
+        string name;
+        cout << "Enter Player 1 name:\n";
+        cin >> name;
+        bool real = 1;
+        players[0] = new ConnectFour_Player('X',name);
         cout << "Enter Player 2 name (Press Enter to face a computer):\n";
-        cin >> player2;
-        if (player2 == "") player2 = "Computer";
-        bool turn = 1;
-        while (!game_is_over()) {
-            display_board();
-            cout << "Enter a Column Number " << (turn ? player1 : player2) << ": \n";
-            int Y;
-            if (!turn && player2 == "Computer") {
-                Y = 1;
-            } else cin >> Y;
-            update_board(-1, Y, (turn ? 'X' : 'O'));
-            if (is_winner()) {
-                cout << (turn ? player1 : player2) << " Has Won" << "\n";
-                display_board();
-                break;
+        cin >> name;
+        if (name == "")
+            players[1] = new Random_Player('O') , real = 0;
+        else
+            players[1] = new ConnectFour_Player('O',name);
+        bool turn = 0;
+        while (!Board_ptr->game_is_over()) {
+            int X,Y;
+            if(!real){
+                players[turn]->get_move(X,Y);
+            }else{
+                Board_ptr->display_board();
+                players[turn]->get_move(X,Y);
+                while(!Board_ptr->update_board(-1, Y, players[turn]->get_symbol())){
+                    players[turn]->get_move(X,Y);
+                }
+                if (Board_ptr->is_winner()) {
+                    cout << (players[turn]->to_string()) << " Has Won" << "\n";
+                    Board_ptr->display_board();
+                    break;
+                }
             }
             turn ^= 1;
         }
-        if (is_draw())
+        if (Board_ptr->is_draw())
             cout << "The Game is a Draw\n";
     }
 
 };
-
 #endif //CONNECTFOUR_FOUR_IN_A_ROW_H
