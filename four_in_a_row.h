@@ -164,15 +164,15 @@ public:
                 if (board[i][j] == '.')
                     continue;
                 if (i >= 2 && board[i][j] == board[i - 1][j] && '.' == board[i - 2][j])
-                    score += board[i][j] == symbol ? 5 : -5;
+                    score += board[i][j] == symbol ? 5 : 0;
                 if (i >= 2 && j >= 2 && board[i][j] == board[i - 1][j - 1] &&
                     '.' == board[i - 2][j - 2])
-                    score += board[i][j] == symbol ? 5 : -5;
+                    score += board[i][j] == symbol ? 5 : 0;
                 if (j < 5 && board[i][j] == board[i][j + 1] && '.' == board[i][j + 2])
-                    score += board[i][j] == symbol ? 5 : -5;
+                    score += board[i][j] == symbol ? 5 : 0;
                 if (i >= 2 && j < 5 && board[i][j] == board[i - 1][j + 1] &&
                     '.' == board[i - 2][j + 2])
-                    score += board[i][j] == symbol ? 5 : -5;
+                    score += board[i][j] == symbol ? 5 : 0;
             }
         }
         return score;
