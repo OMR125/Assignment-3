@@ -70,7 +70,7 @@ public:
     }
 
     bool update_board(int x, int y, char symbol) override {
-        if (is_valid(x,y)&& (board[x][y] == 0)) {
+        if (!(x < 0 || x > 4 || y < 0 || y > 4)&& (board[x][y] == 0)) {
             board[x][y] = symbol;
             n_moves++;
             return true;
@@ -87,7 +87,7 @@ public:
             cout << "\n-----------------------------";
         }
         cout<<endl;
-        }
+    }
     bool game_is_over() override{
         return (n_moves>=24);
     }
@@ -119,7 +119,7 @@ protected:
     char symbol{};
 public:
     Player (char symbol):symbol(symbol){}
-      Player (int order, char sym) {
+    Player (int order, char sym) {
         cout << "Welcome player " << order << endl;
         cout << "Please enter your name: ";
         cin >> name;
@@ -131,7 +131,7 @@ public:
         cin >> x >> y;
     }
     string player_name() {
-         return "Player: " + name ;
+        return "Player: " + name ;
     }
     char get_symbol() const {
         return symbol;
@@ -141,8 +141,8 @@ class RandomPlayer: public Player {
 protected:
     int dimension=0;
 public:
-    RandomPlayer (char symbol, int dimension): Player(symbol){
-        dimension = dimension;
+    RandomPlayer (char symbol, int dim): Player(symbol){
+        dimension = dim;
         name = "Random Computer Player";
         cout << "My names is " << name << endl;
     }
@@ -172,8 +172,8 @@ public:
                     players[i]->get_move(x, y);
                 }
                 boardPtr->display_board();
-                }
             }
+        }
         if (boardPtr->is_draw()){
             cout<<"DRAW!\n";
         }
